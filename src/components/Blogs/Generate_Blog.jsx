@@ -5,15 +5,15 @@ import placeholder from "../../assets/placeholder.png";
 
 function Generate_Blog() {
   const [blogPost, setBlogPost] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
-  const [imageAlt, setImageAlt] = useState("");
+  // const [imageSrc, setImageSrc] = useState("");
+  // const [imageAlt, setImageAlt] = useState("");
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const blogInput = e.target.blogInput.value;
-    const imageInput = e.target.imageInput.value;
+    // const imageInput = e.target.imageInput.value;
 
     setLoading(true);
 
@@ -21,14 +21,14 @@ function Generate_Blog() {
       // Sending request to the backend
       const response = await axios.post("http://127.0.0.1:8000/generate_blog", {
         blog_input: blogInput,
-        image_input: imageInput,
+        // image_input: imageInput,
       });
 
       // Handling the response data
-      const { title, blog_content, image, image_alt } = response.data;
+      const { title, blog_content } = response.data;
       setBlogPost(blog_content);
-      setImageSrc(image);
-      setImageAlt(image_alt);
+      // setImageSrc(image);
+      // setImageAlt(image_alt);
       setTitle(title); // Set title from the response
     } catch (error) {
       console.error("Error:", error);
@@ -55,7 +55,7 @@ function Generate_Blog() {
               required
             />
           </div>
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <label htmlFor="imageInput" className="form-label">
               Enter image description for blog
             </label>
@@ -66,7 +66,7 @@ function Generate_Blog() {
               placeholder="Enter image description"
               required
             />
-          </div>
+          </div> */}
           <button type="submit" className="button-30 submit-btn mt-4">
             Submit
           </button>
@@ -84,12 +84,12 @@ function Generate_Blog() {
             <p className="blog-post-meta mx-3">
               {new Date().toDateString()} by <a href="#">Author</a>
             </p>
-            <img
+            {/* <img
               src={imageSrc}
               alt={imageAlt}
               className="mx-3"
               style={{ width: "40vw", height: "40vh" }}
-            />
+            /> */}
             <p style={{ lineHeight: "1.8rem", padding: "20px 15px" }}>
               {blogPost}
             </p>

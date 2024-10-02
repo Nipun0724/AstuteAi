@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 import cv2
 import cloudinary.uploader
 from diffusers import StableDiffusionPipeline
-from app.function import load_llm, get_src_original_url
+from app.function import load_llm
 from supabase import create_client, Client
 import torch
 
@@ -71,7 +71,6 @@ supabase: Client = create_client('https://hwhwcqocrdidmwixrlil.supabase.co', 'ey
 
 class BlogInput(BaseModel):
     blog_input: str
-    image_input: str
 
 class AdvertisementRequest(BaseModel):
     product_name: str
@@ -244,10 +243,8 @@ async def generate_profile(request_body: ProfileRequest):
 @app.post("/generate_blog")
 def generate_blog(request_body: BlogInput):
     blog_input = request_body.blog_input
-    image_input = request_body.image_input
 
-    logging.info(f"Route has received the data: {blog_input} & {image_input}")
-    image_url, image_description = get_src_original_url(image_input)
+    logging.info(f"Route has received the data: {blog_input}")
     
     prompt_template_str = (
         "You are a digital marketing expert. Write a blog post inspired by the following description: "
@@ -269,8 +266,6 @@ def generate_blog(request_body: BlogInput):
     if blog_content:
         return JSONResponse(content={
             "blog_content": blog_content,
-            "image": image_url,
-            "image_alt": image_description,
         })
     else:
         raise HTTPException(status_code=500, detail="Your article couldn't be generated!")
