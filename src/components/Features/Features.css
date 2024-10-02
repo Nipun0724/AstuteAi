@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+HarunoUmi:wght@400;500;700&display=swap');
+
+/* General heading styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Julius Sans One", sans-serif;
+  margin-bottom: 20px;
+}
+
+/* Container for the card layout */
+.card-container {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Center the cards in the container */
+  align-items: flex-start; /* Align cards at the start */
+  width: 70%;
+  height: 50vh;
+  z-index: 2;
+  
+  margin: 0px 14%; /* Add margin for spacing */
+}
+
+/* Individual card styles */
+.card-1 {
+  width: 280px; /* Width of each card */
+  height: 100%; /* Height of each card */
+  position: relative;
+  font-family: 'Kaisei HarunoUmi', serif; 
+  box-shadow: -20px 20px 50px rgba(0, 0, 0, 0.8);
+  border-radius: 25px;
+  background-color:#d3bccc;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  transition: transform 0.3s; /* Add transition for scaling effect */
+  color: #2b0b21; /* Text color */
+  
+}
+
+/* Content within the card */
+.card-1 .content {
+  padding: 20px;
+  transition: 0.8s all ease;
+  color: #2b0b21; /* Text color */
+  background-color: white;
+  font-weight: 600; /* Bold */
+  transform: translateY(200px); /* Initial position */
+  opacity: 0; /* Initially hidden */
+}
+
+/* Show content on hover */
+.card-1:hover .content {
+  transform: translateY(0px); /* Bring to view */
+  background-color: #5c124687;
+  color: #fff; /* Text color */
+  opacity: 5; /* Make visible */
+  height: 100%;
+}
+
+/* Card image styles */
+.card-1 img {
+  position: absolute;
+  width: 100%; /* Full width */
+  z-index: -1; /* Send to back */
+}
+
+/* Specific styles for h1 within cards */
+.card-1 .content h2 {
+  color: #ffffff; /* Heading color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 900; /* Bold */
+}
+
+.card-1 .content p {
+  color: #fdfdfd; /* Text color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 600; /* Bold */
+}
+.card-2 {
+  width: 280px; /* Width of each card */
+  height: 100%; /* Height of each card */
+  position: relative;
+  font-family: 'Kaisei HarunoUmi', serif; 
+  box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.8);
+  border-radius: 25px;
+  background-color:#d3bccc;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  transition: transform 0.3s; /* Add transition for scaling effect */
+  color: #2b0b21; /* Text color */
+  
+}
+
+/* Content within the card */
+.card-2 .content {
+  padding: 20px;
+  transition: 0.8s all ease;
+  color: #2b0b21; /* Text color */
+  background-color: white;
+  font-weight: 600; /* Bold */
+  transform: translateY(200px); /* Initial position */
+  opacity: 0; /* Initially hidden */
+}
+
+/* Show content on hover */
+.card-2:hover .content {
+  transform: translateY(0px); /* Bring to view */
+  background-color: #5c124687;
+  color: #fdfdfd; /* Text color */
+  opacity: 5; /* Make visible */
+  height: 100%;
+}
+
+/* Card image styles */
+.card-2 img {
+  position: absolute;
+  width: 100%; /* Full width */
+  z-index: -1; /* Send to back */
+}
+
+/* Specific styles for h1 within cards */
+.card-2 .content h2 {
+  color: #ffffff; /* Heading color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 900; /* Bold */
+}
+
+.card-2 .content p {
+  color: #fdfdfd; /* Text color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 600; /* Bold */
+}
+.card-3 {
+  width: 280px; /* Width of each card */
+  height: 100%; /* Height of each card */
+  position: relative;
+  font-family: 'Kaisei HarunoUmi', serif; 
+  box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.8);
+  border-radius: 25px;
+  background-color:#d3bccc;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  transition: transform 0.3s; /* Add transition for scaling effect */
+  color: #2b0b21; /* Text color */
+  
+}
+
+/* Content within the card */
+.card-3 .content {
+  padding: 20px;
+  transition: 0.8s all ease;
+  color: #2b0b21; /* Text color */
+  background-color: white;
+  font-weight: 600; /* Bold */
+  transform: translateY(200px); /* Initial position */
+  opacity: 0; /* Initially hidden */
+}
+
+/* Show content on hover */
+.card-3:hover .content {
+  transform: translateY(0px); /* Bring to view */
+  background-color: #5c124687;
+  color: #fdfdfd; /* Text color */
+  opacity: 5; /* Make visible */
+  height: 100%;
+}
+
+/* Card image styles */
+.card-3 img {
+  position: absolute;
+  width: 100%; /* Full width */
+  z-index: -1; /* Send to back */
+}
+
+/* Specific styles for h1 within cards */
+.card-3 .content h2 {
+  color: #ffffff; /* Heading color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 900; /* Bold */
+}
+
+.card-3 .content p {
+  color: #fdfdfd; /* Text color */
+  font-family: 'Kaisei HarunoUmi', serif;
+  font-weight: 600; /* Bold */
+}
+
+/* Styles for the link/button in the card */
+
+
+/* Button hover effect */
+
+
+/* Responsive styles for smaller screens */
+@media only screen and (max-width: 900px) {
+  .card-container {
+    flex-direction: column; /* Stack cards vertically on smaller screens */
+    align-items: center; /* Center align */
+  }
+}
+.card-1:hover {
+  transform: perspective(1000px) rotateX(-5deg) rotateY(15deg) rotateZ(-3deg); /* Tilt effect */
+}
+.card-2:hover {
+  transform: perspective(1000px) rotateX(10deg) ; /* Tilt effect */
+}
+.card-3:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(-15deg) rotateZ(3deg); /* Tilt effect */
+}
+/* Ensure cards are on a single line */
+@media only screen and (min-width: 901px) {
+  .card-container {
+    justify-content: space-between; /* Distribute space between cards */
+  }
+}

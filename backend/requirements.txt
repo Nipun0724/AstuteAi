@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+requests
+huggingface_hub
+langchain
+ctransformers
+shutil

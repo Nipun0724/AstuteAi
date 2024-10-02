@@ -1,0 +1,59 @@
+.upload-box {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1%;
+}
+.upload-img-box {
+  position: relative;
+  height: 20vh;
+  width: 15vw;
+}
+.img-bg {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.upload-inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.upload-btn {
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: unset;
+  font-size: 14px;
+  border: 2px solid #888;
+  width: 15vw;
+}
+.upload-img-close {
+  position: absolute;
+  left: 90%;
+  color: #888;
+  cursor: pointer;
+}
+.btn-container {
+  display: flex;
+  justify-content: space-around;
+}
+.product-enhancer-page {
+  display: flex;
+}
+.product-input-field {
+  flex: 3;
+}
+.placeholder-image {
+  flex: 1;
+}

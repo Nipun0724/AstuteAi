@@ -1,0 +1,19 @@
+.blog-post {
+  text-align: start;
+  margin: 7%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  flex: 3;
+}
+.blog-page {
+  display: flex;
+}
+.blog-form {
+  flex: 2;
+}
+.placeholder-blog {
+  height: 70vh;
+  margin-top: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

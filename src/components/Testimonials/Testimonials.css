@@ -1,0 +1,194 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap");
+
+.container-5{
+  min-height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  background-color: hsl(0, 0%, 100%);
+  font-size: 0.85rem;
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-weight: 500;
+  padding: 1.7rem 1.7rem 0;
+}*/
+
+.testimonial:nth-child(1) {
+  background-color: #a27cdf;
+}
+
+.testimonial:nth-child(2) {
+  background-color: hsl(225, 54%, 63%);
+}
+
+.testimonial:nth-child(3) {
+  background-color: hsl(0, 15%, 82%);
+}
+
+.testimonial:nth-child(4) {
+  background-color: hsl(224, 59%, 61%);
+}
+
+.testimonial:nth-child(5) {
+  background-color: hsl(0, 15%, 82%);
+}
+
+#testimonials {
+  display: inline-grid;
+  gap: 1.45rem;
+  grid-template-columns: 1fr;
+  grid-template-areas: "daniel" "jonathan" "jeanette" "patrick" "kira";
+}
+
+@media (min-width: 35.65rem) {
+  #testimonials {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: "daniel daniel" "jonathan jeanette" "patrick patrick" "kira kira";
+  }
+}
+
+@media (min-width: 53.35rem) {
+  #testimonials {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: "daniel daniel jonathan" "jeanette patrick patrick" "kira kira kira";
+  }
+}
+
+@media (min-width: 75rem) {
+  #testimonials {
+    grid-template-columns: repeat(4, 16.25rem);
+    grid-template-areas: "daniel daniel jonathan kira" "jeanette patrick patrick kira";
+  }
+}
+
+.testimonial {
+  padding: 1.6rem;
+  border-radius: 0.5rem;
+  box-shadow: 0.625rem 0.625rem 0.625rem rgba(0, 0%, 81%, 50%);
+  font-size: 0.85rem;
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-weight: 500;
+}
+
+.testimonial p{
+  font-size: 1rem
+}
+
+figcaption {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 1.2rem;
+}
+
+figcaption img {
+  grid-area: 1 / 1 / 3 / 2;
+  align-self: center;
+  width: 2.1875rem;
+  height: auto;
+  border-radius: 50%;
+}
+
+figcaption .name {
+  align-self: end;
+  font-weight: 600;
+}
+
+.testimonial .quote-part-1 {
+  font-size: 1.4rem;
+  line-height: 1.3em;
+  margin: 1.5rem 0;
+}
+
+.testimonial .quote-part-2 {
+  line-height: 1.5em;
+}
+
+.testimonial.daniel {
+  background-image: url("data:image/svg+xml,%3Csvg width='104' height='102' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M104 102V59.727H84.114c0-5.871.689-11.182 2.068-15.933 1.379-4.75 3.42-9.287 6.125-13.61C95.01 25.86 98.909 22.257 104 19.375V0c-9.758 4.27-17.712 9.874-23.864 16.813-6.151 6.939-10.712 14.545-13.681 22.818C63.485 47.904 62 59.941 62 75.74V102h42zm-62 0V59.727H22.114c0-5.871.689-11.182 2.068-15.933 1.379-4.75 3.42-9.287 6.125-13.61C33.01 25.86 36.909 22.257 42 19.375V0c-9.652 4.27-17.58 9.874-23.784 16.813C12.01 23.752 7.424 31.358 4.455 39.631 1.485 47.904 0 59.941 0 75.74V102h42z' fill='%23A775F1' fill-rule='nonzero'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 95% 0%;
+  grid-area: daniel;
+}
+
+.testimonial.jonathan {
+  grid-area: jonathan;
+}
+
+.testimonial.jeanette {
+  grid-area: jeanette;
+}
+
+.testimonial.patrick {
+  grid-area: patrick;
+}
+
+.testimonial.kira {
+  grid-area: kira;
+}
+
+.testimonial.daniel .name,
+.testimonial.jonathan .name,
+.testimonial.patrick .name {
+  color: hsl(0, 0%, 81%);
+}
+
+.testimonial.daniel .title,
+.testimonial.jonathan .title,
+.testimonial.patrick .title {
+  color: rgba(0, 0%, 81%, 50%);
+}
+
+.testimonial.daniel .quote-part-1,
+.testimonial.jonathan .quote-part-1,
+.testimonial.patrick .quote-part-1 {
+  color: hsl(0, 0%, 100%);
+}
+
+.testimonial.daniel .quote-part-2,
+.testimonial.jonathan .quote-part-2,
+.testimonial.patrick .quote-part-2 {
+  color: rgba(0, 0%, 81%, 70%);
+}
+
+.testimonial.jeanette .name,
+.testimonial.kira .name {
+  color: hsl(219, 29%, 14%);
+}
+
+.testimonial.jeanette .title,
+.testimonial.kira .title {
+  color: rgba(219, 29%, 14%, 50%);
+}
+
+.testimonial.jeanette .quote-part-2,
+.testimonial.kira .quote-part-2 {
+  color: rgba(219, 29%, 14%, 70%);
+}
+
+.attribution {
+  background-color: rgba(217, 19%, 35%, 10%);
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 1.7rem 0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.3rem;
+}
+
+.attribution p:first-of-type::after {
+  content: " ";
+  white-space: pre-wrap;
+}
+
+.attribution a {
+  color: rgba(263, 55%, 52%, 80%);
+  font-weight: 700;
+}
+
+.attribution a:hover {
+  color: rgba(263, 55%, 52%, 60%);
+}
+
+.attribution a:active {
+  color: rgba(263, 55%, 52%, 80%);
+}
