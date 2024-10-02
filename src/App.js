@@ -41,8 +41,8 @@ function App() {
                 <HeroSection />
                 <Features />
                 <Services />
-                <Slider/>
-                {/* <Footer /> */}
+                <Storyline/>
+                <Footer />
               </div>
             }
           />
