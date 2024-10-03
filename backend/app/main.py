@@ -11,6 +11,14 @@ from diffusers import StableDiffusionPipeline
 from app.function import load_llm
 from supabase import create_client, Client
 import torch
+from torchvision.models.detection import maskrcnn_resnet50_fpn
+import torchvision.transforms as T
+import numpy as np
+import base64
+from typing import List
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 cloudinary.config(
     cloud_name="dtuqpup4a",  # replace with your Cloudinary cloud name
@@ -24,27 +32,28 @@ async def lifespan(app: FastAPI):
     
     # Clear any leftover GPU memory (if needed)
     torch.cuda.empty_cache()
+    
+    try:
+        # Load the Stable Diffusion model with reduced precision (fp16)
+        print("Loading the Stable Diffusion model with fp16 precision.")
+        image_pipe = StableDiffusionPipeline.from_pretrained(
+            "CompVis/stable-diffusion-v1-4", 
+            torch_dtype=torch.float16,
+            revision="fp16",  # Ensure using the fp16 version for memory savings
+            force_download=True  # Re-download the model if needed
+        )
 
-    # Load the Stable Diffusion model with reduced precision (fp16)
-    image_pipe = StableDiffusionPipeline.from_pretrained(
-        "CompVis/stable-diffusion-v1-4", 
-        torch_dtype=torch.float16,
-        revision="fp16",  # Ensure using the fp16 version for memory savings
-        force_download=True  # Re-download the model if needed
-    )
-
-    # Move the model to GPU
-    if torch.cuda.is_available():
-        try:
-            image_pipe = image_pipe.to("cuda")  # Move to CUDA
+        # Force model to be loaded on GPU
+        if torch.cuda.is_available():
+            image_pipe = image_pipe.to("cuda")  # Forcefully move to GPU
             print("Model successfully loaded on CUDA.")
-        except RuntimeError as e:
-            print(f"CUDA memory issue: {e}")
-            image_pipe = image_pipe.to("cpu")  # Fallback to CPU if GPU runs out of memory
-            print("Model loaded on CPU due to memory constraints.")
-    else:
-        print("CUDA not available, loading the model on CPU.")
-        image_pipe = image_pipe.to("cpu")  # Load on CPU if CUDA is not available
+        else:
+            raise RuntimeError("CUDA is not available but required for this operation.")
+
+    except RuntimeError as e:
+        # If any CUDA-related error occurs, raise it as a critical issue
+        print(f"Critical error: {e}")
+        raise e  # Re-raise the error to ensure it's not silently handled
 
     # Yield control back to FastAPI
     yield
@@ -53,6 +62,7 @@ async def lifespan(app: FastAPI):
     del image_pipe
     torch.cuda.empty_cache()  # Clear GPU memory
     print("Model and CUDA cache cleared.")
+
 
 # Attach the lifespan context to FastAPI
 app = FastAPI(lifespan=lifespan)
@@ -73,8 +83,8 @@ class BlogInput(BaseModel):
     blog_input: str
 
 class AdvertisementRequest(BaseModel):
-    product_name: str
-    background_description: str
+    prompt: str
+    product_type: str
     
 class AuthInput(BaseModel):
     email: str
@@ -98,6 +108,62 @@ class ProfileSchema(BaseModel):
     customers: str
     usp: str
     logo: str  # Make `logo` optional
+
+
+def detect_objects(image_pil):
+    logger.info("Starting object detection on the image")
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    transform = T.Compose([T.ToTensor()])
+    image_tensor = transform(image_pil).unsqueeze(0).to(device)
+
+    model = maskrcnn_resnet50_fpn(pretrained=True).to(device)
+    model.eval()
+
+    with torch.no_grad():
+        predictions = model(image_tensor)[0]
+
+    masks = predictions['masks'].cpu().numpy()
+    boxes = predictions['boxes'].cpu().numpy()
+
+    logger.info("Object detection complete. Found %d boxes.", len(boxes))
+
+    return masks, boxes
+
+def add_text_outside_box(image_pil, boxes, catchy_text):
+    logger.info("Adding text outside the detected box.")
+    
+    image = np.array(image_pil)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    pil_image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_image)
+
+    font_size = 40
+    font = ImageFont.truetype("arial.ttf", font_size)  # Added "arial.ttf" for proper font loading
+
+    image_width, image_height = pil_image.size  # Corrected width, height order
+    x_min, y_min, x_max, y_max = [int(b) for b in boxes[0]]
+
+    text_x = x_max + 20
+    text_y = (y_min + y_max) // 2
+
+    text_bbox = draw.textbbox((text_x, text_y), catchy_text, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+
+    if text_x + text_width > image_width:
+        text_x = image_width - text_width - 20
+
+    if text_y + text_height > image_height:
+        text_y = image_height - text_height - 20
+
+    draw.text((text_x, text_y), catchy_text, font=font, fill=(255, 255, 255))
+
+    image_with_text = np.array(pil_image)
+
+    logger.info("Text added successfully outside the box.")
+    
+    return Image.fromarray(image_with_text)
 
 @app.post("/register")
 def register(auth_input: AuthInput):
@@ -126,66 +192,72 @@ def login(auth_input: AuthInput):
 
 @app.post("/generate_advertisement")
 async def generate_advertisement(request: AdvertisementRequest):
+    prompt = request.prompt
+    product_type = request.product_type
+    logger.info("Received request to generate advertisement for product: %s", product_type)
+
     try:
-        product_name = request.product_name
-        background_description = request.background_description
-        logger.info(f"Received request to generate advertisement for product: {product_name}")
+        poster_image = image_pipe(product_type).images[0]  # Assuming image_pipe is properly defined
+        logger.info("Image generated from prompt.")
 
-        image_prompts = [
-            f"A {product_name} bottle emerging from a foggy background {background_description} and dramatic lighting with a rotating effect.",
-            f"Close-up of the {product_name} bottle rotating to highlight its features {background_description} with soft, elegant lighting.",
-            f"A person in a stylish setting applying the {product_name} {background_description}, showing satisfaction.",
-            f"Animated visual effect representing the {product_name} mist spreading around the scene {background_description}.",
-            f"The {product_name} bottle fading out {background_description}."
-        ]
+        # Object detection
+        masks, boxes = detect_objects(poster_image)
 
-        logger.info(f"Generated image prompts: {image_prompts}")
+        catchy_text = generate_catchy_text(prompt)
+        logger.info("Generated catchy text: %s", catchy_text)
 
-        image_filenames = []
-        for i, prompt in enumerate(image_prompts):
-            logger.info(f"Generating image for prompt {i + 1}/{len(image_prompts)}: {prompt}")
-            image = image_pipe(prompt).images[0]
-            image_filename = f"frame_{i}.png"
-            image.save(image_filename)
-            image_filenames.append(image_filename)
-            logger.info(f"Saved image: {image_filename}")
+        final_image = add_text_outside_box(poster_image, boxes, catchy_text)
 
-        frame_rate = 2
-        video_filename = "advertisement.mp4"
+        buffered = BytesIO()
+        final_image.save(buffered, format="PNG")
+        buffered.seek(0)
 
-        first_image = cv2.imread(image_filenames[0])
-        frame_size = (first_image.shape[1], first_image.shape[0])
+        upload_result = cloudinary.uploader.upload(buffered)
+        logger.info("Image uploaded to Cloudinary.")
 
-        logger.info("Creating video from generated images.")
-        fourcc = cv2.VideoWriter_fourcc(*'avc1')  # Correct fourcc for H.264 codec
-        video_writer = cv2.VideoWriter(video_filename, fourcc, frame_rate, frame_size)
-
-        for image_filename in image_filenames:
-            frame = cv2.imread(image_filename)
-            video_writer.write(frame)
-            logger.info(f"Added frame to video: {image_filename}")
-
-        video_writer.release()
-        logger.info(f"Video created successfully: {video_filename}")
-
-        # Upload video to Cloudinary
-        logger.info("Uploading video to Cloudinary.")
-        cloudinary_result = cloudinary.uploader.upload_large(
-            video_filename, resource_type="video"
-        )
-        logger.info(f"Cloudinary upload response: {cloudinary_result}")  # Added logging
-        cloudinary_url = cloudinary_result['secure_url']
-        logger.info(f"Video uploaded successfully. URL: {cloudinary_url}")
-
-
-        # Return the Cloudinary URL in the response
-        return JSONResponse(content={"video_url": cloudinary_url})
-
+        return {"image_url": upload_result['url'], "catchy_text": catchy_text}
     except Exception as e:
-        logger.error(f"Error occurred while generating advertisement: {str(e)}")
+        logger.error("Error generating advertisement: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
-from pydantic import BaseModel
+def generate_catchy_text(product_type):
+    prompt_template_str = (
+        "Generate a short 3 words catchy text or slogan for the {product_type} "
+        "which displays in the advertisement poster."
+    )
+    
+    prompt_template = PromptTemplate.from_template(prompt_template_str)
+    
+    llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.4, google_api_key="AIzaSyARn_PcqweM5MXHxYaIWGQcf-BDJMP1bDw")
+    
+    sequence = prompt_template | llm
+    
+    # Invoke the LLM
+    result = sequence.invoke(input={"product_type": product_type})
+    
+    # Add logging for debugging
+    logger.info(f"Result from AI model: {result}, type: {type(result)}")
+    
+    # Extract the content from the result
+    if hasattr(result, 'content'):
+        catchy_text = result.content.strip()  # Extract and strip leading/trailing whitespace
+        
+        # Remove asterisks and split by newline
+        catchy_text_lines = catchy_text.split('\n')
+        catchy_text_cleaned = [line.strip('* ').strip() for line in catchy_text_lines]  # Strip asterisks and whitespace
+        
+        # Keep the lines as they are (return as a list)
+        catchy_text = "\n".join(catchy_text_cleaned)  # Join cleaned lines with newline
+    else:
+        catchy_text = str(result).strip()  # Fallback if the content attribute does not exist
+    
+    # Logging the final catchy text
+    logger.info(f"Generated catchy text: {catchy_text}")
+    
+    return catchy_text
+
+
+
 
 class ProfileSchema(BaseModel):
     f_name: str
@@ -246,6 +318,7 @@ def generate_blog(request_body: BlogInput):
 
     logging.info(f"Route has received the data: {blog_input}")
     
+    
     prompt_template_str = (
         "You are a digital marketing expert. Write a blog post inspired by the following description: "
         "{blog_description}. The blog should be around 1000 words long, and it should be informative and engaging."
@@ -257,7 +330,6 @@ def generate_blog(request_body: BlogInput):
     sequence = prompt_template | llm
     
     result = sequence.invoke(input={"blog_description": blog_input})
-    
     if isinstance(result, str):
         blog_content = result
     else:

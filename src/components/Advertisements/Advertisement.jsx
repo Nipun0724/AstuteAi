@@ -18,11 +18,11 @@ const Advertisement = () => {
           const response = await axios.post(
             "http://127.0.0.1:8000/generate_advertisement",
             {
-              product_name: productName,
-              background_description: backgroundDescription,
+              prompt: backgroundDescription, // Send background description as prompt
+              product_type: productName,      // Send product name as product_type
             }
           );
-          setVideoUrl(response.data.video_url);
+          setVideoUrl(response.data.image_url); // Assuming you're getting an image URL instead of a video URL          
         } catch (error) {
           console.error("Error fetching video URL:", error);
         } finally {
@@ -41,7 +41,7 @@ const Advertisement = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Generate Advertisement</h2>
+      <h2>Generate Social Post</h2>
       <hr style={{ width: "90%" }} />
       <div className="blog-page">
         <form onSubmit={handleSubmit} className="blog-form">
@@ -59,13 +59,13 @@ const Advertisement = () => {
           </div>
           <div className="mt-3">
             <label htmlFor="backgroundDescription" className="form-label">
-              Background Description
+              Promt
             </label>
             <input
               type="text"
               className="form-control"
               id="backgroundDescription"
-              placeholder="Enter background description"
+              placeholder="Enter prompt"
               required
             />
           </div>
@@ -83,10 +83,8 @@ const Advertisement = () => {
             </div>
           ) : videoUrl ? (
             <div className="placeholder-content video-ad">
-              <ReactPlayer
-                url={videoUrl}
-                playing
-                controls
+              <img
+                src={videoUrl}
                 width="100%"
                 height="100%"
               />
@@ -94,7 +92,7 @@ const Advertisement = () => {
           ) : (
             <div className="placeholder-content">
               <img src={placeholder} alt="" style={{ height: "150px" }} />
-              <p>Your Ad goes here</p>
+              <p>Your Post goes here</p>
             </div>
           )}
         </div>
